@@ -1,0 +1,12 @@
+{% for setlist in setlists %}
+<h3><a href='#'>{{setlist.artist}} at {{setlist.venue}} on {{setlist.day}}</a></h3>
+<div class="setlistBody">
+    <p>{{setlist.songs}}</p>
+    {% if setlist.notes %}
+        <p class='notes'>{{setlist.notes}}</p>
+    {% endif %}
+    {% if app_user %}
+        <p><span class='deleteSetLink' onclick='deleteId({{setlist.key.id}});'>Delete</span></p>
+    {% endif %}
+</div>
+{% endfor %}

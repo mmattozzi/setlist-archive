@@ -1,0 +1,95 @@
+body {
+    margin: 0px;
+    font-size: 12px;
+}
+
+a {
+    color: black;
+}
+
+.mainbody {
+    margin: 12px;
+}
+
+h1 {
+    font-family: Verdana;
+    margin-left: 24px;
+}
+
+h3 {
+    font-size: 14px;
+}
+
+table {
+    font-size: 12px;
+}
+
+.userheader {
+    background-color: black;
+    color: white;
+    text-align: right;
+    padding: 6px;
+    font-family: Verdana;
+    font-size: 12px;
+}
+
+.userheader > a {
+    color: white;
+}
+
+textarea {
+    width: 300px;
+    height: 175px;
+}
+
+.forminput {
+    width: 200px;
+}
+
+.formlabel {
+    font-size: 14px;
+}
+
+.setlistform {
+    width: 630px;
+    font-size: 14px;
+    background-color: white;
+    color: black;
+    padding: 12px;
+    border: 1px solid black;
+    font-family: Verdana;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 5px 5px 5px #888;
+    -moz-box-shadow: 5px 5px 5px #888;
+    -webkit-box-shadow: 5px 5px 5px #888;
+}
+
+#spinner {
+    display: none;
+    margin-top: 12px;
+}
+
+.logo {
+    margin-top: 12px;
+}
+
+.deleteSetLink {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.photo {
+    margin-top: 48px;
+    box-shadow: 5px 5px 5px #888;
+    -moz-box-shadow: 5px 5px 5px #888;
+    -webkit-box-shadow: 5px 5px 5px #888;
+}
+
+.rightCol {
+    margin-left: 12px;
+}
+
+.notes {
+    width: 400px;
+}

@@ -1,0 +1,187 @@
+<html>
+    <head>
+        <title>Setlist Archive</title>
+        
+        <link rel="stylesheet" href="javascript/css/smoothness/jquery-ui-1.8.10.custom.css" type="text/css" />
+        <link rel="stylesheet" href="javascript/css/style.css" type="text/css" />
+        
+        <script type="text/javascript" src="javascript/js/jquery-1.5.1.min.js"></script>
+        <script type="text/javascript" src="javascript/js/jquery-ui-1.8.10.custom.min.js"></script>
+        
+        <script type="text/javascript">
+            var idToDelete = -1;
+            var setListSort = "date";
+        
+            $(document).ready(function() {
+                {% if auth_header %}
+                $.ajaxSetup({
+                    headers: {
+                        Authorization: "{{auth_header}}"
+                    }
+                });
+                {% endif %}
+                
+                $('#apiKeyDialog').dialog({autoOpen: false, title: "Api Key"});
+                
+                $('#deleteDialog').dialog({
+                    resizable: false,
+                    title: "Delete setlist?",
+                    modal: true,
+                    autoOpen: false,
+                    position: [100, 100],
+                    buttons: {
+                        "Delete": function() {
+                            $.post("/delete?id=" + idToDelete, function(data) {
+                                setTimeout("reload();", 500);
+                            });
+                            $(this).dialog("close");
+                        },
+                        "Cancel": function() {
+                            $(this).dialog("close");
+                        }
+                    }
+                });
+                
+                $("#addset").button();
+                $('#sortRadio').buttonset();
+                $('#sortRadio').change(function() {
+                    var s = $("input[@name='sort']:checked")[0].id;
+                    if (s === "dateSort") {
+                        setListSort = "date";
+                    } else if (s === "artistSort") {
+                        setListSort = "artist";
+                    } else if (s === "venueSort") {
+                        setListSort = "venue";
+                    }
+                    reload();
+                });
+                                
+                $("#addset").click(function() {
+                    $("#addset").hide();
+                    $("#spinner").show();
+                    var set = {};
+                    set.artist = $("#artist").val();
+                    set.day = $("#day").val();
+                    set.venue = $("#venue").val();
+                    var songs = $("#songs").val();
+                    if (songs && songs != "") {
+                        set.songs = songs;
+                    }
+                    var notes = $("#notes").val();
+                    if (notes && notes != "") {
+                        set.notes = notes;
+                    }
+                    set.email = "nobody";
+                    $.post("/post", JSON.stringify(set), function(data) {
+                        clearForm();
+                        setTimeout("reload();", 500);
+                    });
+                });
+                
+                reload();
+            });
+            
+            function reload() {
+                $('#setlists').accordion('destroy');
+                $.get("/sets?sort=" + setListSort, function(data) {
+                    $("#setlists").html(data);
+                    $("#spinner").hide();
+                    $("#addset").show();
+                    $('#setlists').accordion({
+                        autoHeight: false, navigation: true, collapsible: true
+                    });
+                });
+            }
+        
+            function deleteId(setId) {
+                idToDelete = setId;
+                $('#deleteDialog').dialog("open");
+            }
+            
+            function clearForm() {
+                $("#artist").val("");
+                $("#venue").val("");
+                $("#songs").val("");
+                $("#notes").val("");
+            }
+        
+        </script>
+        
+    </head>
+    <body>
+        {% if user %}
+            <div class="userHeader">{{user.nickname}} <a href='{{user_url}}'>Logout</a> <a href='#' onclick='$("#apiKeyDialog").dialog("open");'>Api Key</a></div>
+        {% else %}
+            <div class="userHeader"><a href='{{user_url}}'>Login</a></div>
+        {% endif %}
+        <div class="logo"><img src='images/setlist-archive.png'/></div>
+        <div class='mainbody'>
+            <table>
+                <tr>
+                    <td width='75%' valign='top'>
+                        <div id="setlists"></div>
+                    </td>
+                    <td width='25%' valign='top'>
+                        <div class="rightCol">
+                            <form>
+                            	<div id="sortRadio">
+                            		<input type="radio" id="dateSort" name="sort" checked="checked" /><label for="dateSort">Date</label>
+                            		<input type="radio" id="artistSort" name="sort" /><label for="artistSort">Artist</label>
+                            		<input type="radio" id="venueSort" name="sort" /><label for="venueSort">Venue</label>
+                            	</div>
+                            </form>
+                            <div><img class="photo" src='images/grohl.jpg'/></div>
+                            <div><img class="photo" src='images/band01.jpg'/></div>
+                            <div><img class="photo" src='images/01brandnew.jpg'/></div>
+                            <div><img class="photo" src='images/aar1.jpg'/></div>
+                            <div><img class="photo" src='images/bnl.jpg'/></div>
+                            <div><img class="photo" src='images/claudio.jpg'/></div>
+                            <div><img class="photo" src='images/dboard1.jpg'/></div>
+                            <div><img class="photo" src='images/incubus.jpg'/></div>
+                            <div><img class="photo" src='images/scotty.jpg'/></div>
+                            <div><img class="photo" src='images/somebody.jpg'/></div>
+                            <div><img class="photo" src='images/straylightrun.jpg'/></div>
+                            <div><img class="photo" src='images/tbs.jpg'/></div>
+                            <div><img class="photo" src='images/tbscrowd.jpg'/></div>
+                            <div><img class="photo" src='images/uhm.jpg'/></div>
+                            <div><img class="photo" src='images/warpedschedule.jpg'/></div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            
+            <br/><br/>
+            
+            {% if user %}
+                <div class="setlistform ui-corner-right ui-corner-left">
+                    <h3>Add a new setlist</h3>
+                    <table>
+                        <tr><td class='formlabel'>Artist: </td><td><input class='forminput' id="artist" type="text"></input></td></tr>
+                        <tr><td class='formlabel'>Date: </td><td><input class='forminput' id="day" type="text" value="{{date}}"></input></td></tr>
+                        <tr><td class='formlabel'>Venue: </td><td><input class='forminput' id="venue" type="text"></input></td></tr>
+                    </table>
+                    <br/>
+                    <table>
+                        <tr>
+                            <td class='formlabel'>
+                                Songs:<br/>
+                                <textarea id="songs" style="margin-right: 10px;"></textarea><br/>
+                            </td>
+                            <td class='formlabel'>
+                                Notes:<br/>
+                                <textarea id="notes"></textarea><br/>
+                            </td>
+                        </tr>
+                    </table>
+                    <button id="addset" style="margin-top: 24px;">Add</button><image id="spinner" src='images/spinner.gif'/>
+                </div>
+            {% endif %}
+             
+        </div>
+        <br/><br/>
+        
+        <!-- Dialogs -->
+        <div id="apiKeyDialog" style="display:none;">Api Key = {{api_key}}</div>
+        <div id="deleteDialog" style="display:none;">Delete this setlist?</div>
+    </body>
+</html>
