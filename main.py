@@ -18,6 +18,9 @@ import random
 import base64
 import re
 
+# Set this to False and any user can log in and post a set list using their Google account
+ONLY_SUPERUSER_CAN_ADD=True
+
 class AppUser(db.Model):
     ''' GAE datastore representation of our app's user '''
     user_email = db.StringProperty(required=True)
@@ -52,11 +55,14 @@ class MainPage(webapp.RequestHandler):
         template_values = { 
             "user_url": user_url, 
             "user": user, 
-            "date": datetime.date.today().strftime("%Y-%m-%d")
+            "date": datetime.date.today().strftime("%Y-%m-%d"),
+            "can_add_sets": True
         }
         if user:
             template_values["auth_header"] = "Basic " + base64.b64encode(":".join((user.email(), api_key)))
             template_values["api_key"] = api_key
+        if app_user and not app_user.superuser and ONLY_SUPERUSER_CAN_ADD:
+            template_values["can_add_sets"] = False
         
         self.response.out.write(template.render(os.path.join(os.path.dirname(__file__), 'index.html'), template_values))
 
@@ -80,7 +86,7 @@ class SetlistBody(webapp.RequestHandler):
 class PostSet(webapp.RequestHandler):
     ''' Given a setlist POSTed as JSON, add it to the data store. '''
     def post(self):
-        app_user = basic_auth(self.request, self.response)
+        app_user = basic_auth(self.request, self.response, ONLY_SUPERUSER_CAN_ADD)
         if app_user:
             convertNewLines = True
             if "convertNewLines" in self.request.str_GET:

@@ -72,9 +72,18 @@
                         set.notes = notes;
                     }
                     set.email = "nobody";
-                    $.post("/post", JSON.stringify(set), function(data) {
-                        clearForm();
-                        setTimeout("reload();", 500);
+                    $.ajax({
+                        type: 'POST',
+                        url: '/post',
+                        data: JSON.stringify(set),
+                        success: function(data) {
+                            clearForm();
+                            setTimeout("reload();", 500);
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            alert(errorThrown);
+                            setTimeout("reload();", 500);
+                        }
                     });
                 });
                 
@@ -152,7 +161,7 @@
             
             <br/><br/>
             
-            {% if user %}
+            {% if can_add_sets %}
                 <div class="setlistform ui-corner-right ui-corner-left">
                     <h3>Add a new setlist</h3>
                     <table>
@@ -178,9 +187,7 @@
             {% endif %}
              
         </div>
-        <div id="footer">
-            <a href="http://github.com/mmattozzi/setlist-archive">http://github.com/mmattozzi/setlist-archive</a>
-        </div>
+        <br/><br/>
         
         <!-- Dialogs -->
         <div id="apiKeyDialog" style="display:none;">Api Key = {{api_key}}</div>
