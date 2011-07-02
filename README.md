@@ -1,0 +1,5 @@
+About
+=================
+This is a little project I put together for a friend so he could record setlists from concerts he went to on a sweet little website. I used to host this on a home computer, but I moved it to Google AppEngine after that computer blew up. Of course, by "moving" I mean rewriting in python and building a new interface using jquery/jqueryui. 
+
+I decided to experiment with a system that used API keys rather than Google Auth for update operations. A user logs in with their Google Account and an API key is either generated or fetched from the data store. From then on, the API key is used for ajax calls from the javascript on the page to add and delete setlists. The advantage here is that the same API calls and API key can be used from scripts that live outside the Google Auth process, such as the script I wrote to port data from MySQL into GAE. The API key is passed as the password in the HTTP Basic Auth header. I've read some blogs about authenticating a Google user from a command line script and it sounded pretty rough-- I think this simple approach works nicely. 
