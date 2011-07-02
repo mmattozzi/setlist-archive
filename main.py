@@ -35,6 +35,7 @@ class MainPage(webapp.RequestHandler):
     ''' Render the main index page '''
     def get(self):
         user = users.get_current_user()
+        app_user = None;
         if user:
             user_url = users.create_logout_url(self.request.uri)
             matching_users = db.GqlQuery("SELECT * FROM AppUser WHERE user_email = :1", user.email())
@@ -61,7 +62,7 @@ class MainPage(webapp.RequestHandler):
         if user:
             template_values["auth_header"] = "Basic " + base64.b64encode(":".join((user.email(), api_key)))
             template_values["api_key"] = api_key
-        if app_user and not app_user.superuser and ONLY_SUPERUSER_CAN_ADD:
+        if (not app_user) or (app_user and not app_user.superuser and ONLY_SUPERUSER_CAN_ADD):
             template_values["can_add_sets"] = False
         
         self.response.out.write(template.render(os.path.join(os.path.dirname(__file__), 'index.html'), template_values))
